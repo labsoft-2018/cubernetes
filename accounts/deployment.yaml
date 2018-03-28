@@ -1,0 +1,41 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+ name: accounts-deployment
+ namespace: staging
+ labels:
+   app: accounts-deploy
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: accounts-pod-template
+      labels:
+        app: accounts
+    spec:
+      containers:
+        - name: accounts
+          image: 986381756175.dkr.ecr.us-east-1.amazonaws.com/labsoft-2018/accounts:latest
+          imagePullPolicy: Always
+          env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: aws-keys
+                key: aws-access-key-id
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: aws-keys
+                key: aws-secret-access-key
+          - name: AWS_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: aws-keys
+                key: aws-access-key-id
+          - name: AWS_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: aws-keys
+                key: aws-secret-access-key

@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -euxo pipefail
+
+NAME="k8s.envisioning.io"
+KOPS_STATE_STORE="s3://k8s-envisioning-io-state-store"
+AWS_REGION_KOPS=us-east-1a
+SSH_PATH="~/.ssh/k8s_envisioning.pub"
+MININUM_NODE_COUNT=1
+MININUM_MASTER_COUNT=1
+MININUM_NODE_SIZE=t2.small
+MININUM_MASTER_SIZE=t2.small
+for arg in "$@"
+do
+    if [[ "$arg" == "down" ]]; then
+      echo "Cluster is going down..."
+      kops delete cluster k8s-cluster.envisioning.io --yes 
+      echo "Success!"
+    elif [[ "$arg" == "up" ]]; then
+      echo "Calculating resources..."
+      kops create cluster $NAME --cloud aws \
+                          --ssh-public-key $SSH_PATH \
+                          --zones $AWS_REGION_KOPS \
+                          --node-count $MININUM_NODE_COUNT \
+                          --master-count $MININUM_MASTER_COUNT \
+                          --master-size $MININUM_MASTER_SIZE \
+                          --node-size $MININUM_NODE_SIZE \
+                          --state $KOPS_STATE_STORE
+      echo "Creating rescources..."
+      kops update cluster $NAME --yes --state $KOPS_STATE_STORE
+      echo "Success!"
+    elif [[ "$arg" == "up-prod" ]]; then
+      echo "Not yet, buddy."
+    elif [[ "$arg" == "update" ]]; then
+      kops update cluster $NAME --yes --state $KOPS_STATE_STORE
+    elif [[ "$arg" == "validate" ]]; then
+      # Fix this
+      kops validate cluster --state $KOPS_STATE_STORE
+    else
+        echo "Choose one of the following options:"
+        echo "up -> create your cluster with minimal usage"
+        echo "up-prod -> time to shine"
+        echo "down -> deletes your cluster"
+    fi
+done

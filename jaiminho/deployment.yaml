@@ -1,0 +1,51 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: jaiminho
+  namespace: staging
+  labels:
+    app: jaiminho
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: jaiminho
+  template:
+    metadata:
+      labels:
+        app: jaiminho
+    spec:
+      containers:
+      - name: jaiminho
+        image: rafa93br/jaiminho:1.0.0
+        env:
+        - name: NODE_ENV
+          value: "staging"
+        - name: POSTGRES_DATABASE
+          value: "entities-db"
+        - name: POSTGRES_USERNAME
+          value: "entities"
+        - name: POSTGRES_PASSWORD
+          value: "mypass"
+        - name: POSTGRES_PORT
+          value: "5432"
+        - name: POSTGRES_HOST
+          value: "entities-db"
+        - name: GOOGLE_API_KEY
+          value: ""
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-keys
+              key: aws-access-key-id
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-keys
+              key: aws-secret-access-key
+        - name: REDIS_HOST
+          value: "redis"
+        - name: REDIS_PORT
+          value: "6379"
+        ports:
+        - containerPort: 3002

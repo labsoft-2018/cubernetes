@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: real-time-location
+  namespace: staging
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.org/ssl-services: "real-time-location"
+    kubernetes.io/tls-acme: "true"
+spec:
+  tls:
+    - hosts:
+      - "real-time-location.staging.api.labsoft.host"
+      secretName: real-time-location-certificate
+  rules:
+  - host: "real-time-location.staging.api.labsoft.host"
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: real-time-location
+          servicePort: http

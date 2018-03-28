@@ -1,0 +1,39 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: real-time-location
+  namespace: staging
+  labels:
+    app: real-time-location
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: real-time-location
+  template:
+    metadata:
+      labels:
+        app: real-time-location
+    spec:
+      containers:
+      - name: real-time-location
+        image: rafa93br/real-time-location:1.0.0
+        env:
+        - name: NODE_ENV
+          value: "staging"
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: aws-keys
+              key: aws-access-key-id
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aws-keys
+              key: aws-secret-access-key
+        - name: REDIS_HOST
+          value: "redis"
+        - name: REDIS_PORT
+          value: "6379"
+        ports:
+        - containerPort: 3000

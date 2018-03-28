@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: jaiminho
+  namespace: staging
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.org/ssl-services: "jaiminho"
+    kubernetes.io/tls-acme: "true"
+spec:
+  tls:
+    - hosts:
+      - "jaiminho.staging.api.labsoft.host"
+      secretName: jaiminho-certificate
+  rules:
+  - host: "jaiminho.staging.api.labsoft.host"
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: jaiminho
+          servicePort: http
